@@ -2,6 +2,7 @@ import React from "react";
 import styled from "styled-components";
 
 import SignUp from "../components/SignUp";
+import SignIn from "../components/SignIn";
 
 const Wrapper = styled.div`
   height: 100%;
@@ -44,23 +45,35 @@ const Button = styled.button`
 `;
 
 const Welcome = styled.div`
-  font-family: "RocknRoll One", sans-serif;
-  font-size: 1.2rem;
+  font-family: "Roboto", sans-serif;
+  font-size: 1.3rem;
   text-align: center;
 `;
 
 const SignMenu = () => {
+  React.useEffect(() => {
+    document.title = "Awesome Lists";
+  });
   const [showSignUp, setShowSignUp] = React.useState(false);
+  const [showSignIn, setShowSignIn] = React.useState(false);
   const [showSignMenu, setShowSignMenu] = React.useState(true);
 
   const signUpClick = () => {
     setShowSignUp(true);
     setShowSignMenu(false);
   };
+  const signInClick = () => {
+    setShowSignIn(true);
+    setShowSignMenu(false);
+  };
   const cancelSignUp = () => {
     setShowSignUp(false);
     setShowSignMenu(true);
   }
+  const cancelSignIn = () => {
+    setShowSignIn(false);
+    setShowSignMenu(true);
+  };
 
   return (
     <Wrapper>
@@ -68,12 +81,13 @@ const SignMenu = () => {
         <Container>
           <Welcome>Welcome to <b>Awesome Lists</b>. To begin, sign in or create your account.</Welcome>
           <Buttons>
-            <Button>Sign In</Button>
+            <Button onClick={signInClick}>Sign In</Button>
             <Button onClick={signUpClick}>Sign Up</Button>
           </Buttons>
         </Container>
       : null }
       { showSignUp ? <SignUp cancelSignUp={cancelSignUp} /> : null }
+      { showSignIn ? <SignIn cancelSignIn={cancelSignIn} /> : null }
     </Wrapper>
   );
 };

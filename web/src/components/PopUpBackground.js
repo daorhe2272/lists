@@ -5,17 +5,20 @@ const Background = styled.div`
   position: absolute;
   top: 0;
   bottom: 0;
-  width: 100%;
+  left: 0;
+  right: 0;
   background-color: rgba(0, 0, 0, 0.6);
   z-index: 9;
-  display: none;
+  display: flex;
   justify-content: center;
   align-items: center;
 `;
 
-const PopUpBackground = () => {
+const PopUpBackground = ({ children }) => {
   return (
-    <Background />
+    <Background>
+      { children }
+    </Background>
   );
 };
 

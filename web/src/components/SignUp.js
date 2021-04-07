@@ -1,7 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useMutation } from "@apollo/client";
 import styled from "styled-components";
 
+import MessageWRedirect from "./MessageWRedirect";
+import PopUpBackground from "./PopUpBackground";
 import { SIGNUP_USER } from "../gql/mutation";
 
 const Container = styled.div`
@@ -45,11 +47,10 @@ const CancelButton = styled(Button)`
 `;
 
 const SignUp = ({ cancelSignUp }) => {
-  useEffect(() => {
-    document.title = "Sign Up | Awesome Lists";
-  });
   const [values, setValues] = useState();
-  // Update the state when a user types in the form
+  const [showSignUpMessage, setShowSignUpMessage] = React.useState(false);
+
+  // Update the values state when a user types in the form
   const onChange = (event) => {
     setValues({
       ...values,
@@ -57,31 +58,77 @@ const SignUp = ({ cancelSignUp }) => {
     });
   };
 
-  const checkEmail = () => {return false;};
-
-  const checkPwd = () => {return false;};
-
-  const [signUpMutation] = useMutation(SIGNUP_USER, {
-    onError: error => {console.log(error);},
-    onCompleted: data => {
-      console.log(data);
-    }
-  });
-
-  const doSignUp = () => {
-    if (checkEmail() === true && checkPwd() === true) {
-      signUpMutation({ variables: values });
-    } else {
-      alert("Please verify that you have a valid e-mail and password.")
+  const checkEmail = () => {
+    try {
+      let re = /\S+@\S+\.\S+/;
+      if (re.test(values.email)) {
+        return true;
+      } else {
+        alert("Please use a valid email");
+        return false;
+      }
+    } catch {
+      return false;
     }
   };
 
+  const checkPwd = () => {
+    try {
+      if (values.password && values.password === values.repassword) {
+        if (values.password.length > 7) {
+          return true;
+        } else {
+          alert("Your password is too short")
+        }
+      } else {
+        alert("Please verify that your password is typed correctly");
+      }
+    } catch {
+      alert("Please make sure you filled in your data correctly.");
+    }
+  };
+
+  const checkFields = () => {
+    try {
+      if (values.email && values.password && values.repassword && values.username) {
+        return true;
+      } else {
+        return false;
+      }
+    } catch {
+      return false;
+    }
+  };
+
+  const [signUpMutation] = useMutation(SIGNUP_USER, {
+    onError: error => {
+      console.log(error); // Remove for production
+      alert("Whoops! An error occurred");
+    },
+    onCompleted: () => {
+      setShowSignUpMessage(true);
+    }
+  });
+
+  const doSignUp = (e) => {
+    e.stopPropagation();
+    if (checkFields() === true && checkPwd() === true && checkEmail() === true) {
+      signUpMutation({ variables: values });
+    } else {
+      alert("Please make sure you filled in all fields correctly before signing up")
+    }
+  };
+
+  let message = "Your account was successfully registered. To continue, please check the e-mail we sent you. It should arrive in a couple of minutes. If not, please check your spam folder.";
+
   return (
+
     <Container>
+      { showSignUpMessage ? <PopUpBackground children={MessageWRedirect(message)} /> : null }
       <Input type="email" name="email" placeholder="E-mail address" onChange={onChange} />
       <Input type="text" name="username" placeholder="Full name" onChange={onChange} />
       <Input type="password" name="password" placeholder="Password" onChange={onChange} />
-      <Input type="password" name="re-password" placeholder="Confirm password" />
+      <Input type="password" name="repassword" placeholder="Confirm password" onChange={onChange} />
       <SignUpButton onClick={doSignUp}>Sign Up</SignUpButton>
       <CancelButton onClick={cancelSignUp}>Cancel</CancelButton>
     </Container>
