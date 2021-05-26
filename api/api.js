@@ -27,7 +27,7 @@ const server = new ApolloServer({
   context: async ({ req }) => {
     const token = req.headers.authorization;
     const user = getUser(token);
-    return { models };
+    return { models, user };
   }
 });
 server.applyMiddleware({ app, path: "/gql" })
