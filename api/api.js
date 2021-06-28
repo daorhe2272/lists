@@ -1,6 +1,7 @@
 const express = require("express");
 const jwt = require("jsonwebtoken");
 const { ApolloServer, gql } = require("apollo-server-express");
+const cors = require("cors");
 require("dotenv").config();
 
 const db = require("./models/db");
@@ -9,6 +10,9 @@ const typeDefs = require("./models/schema");
 const resolvers = require("./resolvers/index");
 
 const app = express();
+
+// Allow only requests coming from front-end server for production
+app.use(cors());
 
 const getUser = (token) => {
   if (token) {
